@@ -218,19 +218,10 @@ def can_apply_fact_to_rule(fact, rule, facts_list):
             first_fact_of_rule = f
             break
     
-    # Если не нашли первый факт правила - нельзя применить правило
-    if first_fact_of_rule is None:
-        return False
+    fact_element_names = {elem[0] for elem in fact.fuzzy_set}
+    rule_element_names = {elem[0] for elem in first_fact_of_rule.fuzzy_set}
     
-    if len(fact.fuzzy_set) != len(first_fact_of_rule.fuzzy_set):
-        return False
-    
-    for i in range(len(fact.fuzzy_set)):
-        if fact.fuzzy_set[i][0] != first_fact_of_rule.fuzzy_set[i][0]:
-            return False
-    
-    return True
-
+    return fact_element_names == rule_element_names
 
 class Implication:
     def __init__(self, rule_name, matrix, row_labels, col_labels):
@@ -369,7 +360,7 @@ if __name__ == "__main__":
             print_implication(implication)
             
         new_facts_calc = 0
-        
+        print()
         for fact in facts:
             for j, rule in enumerate(rules):
                 if can_apply_fact_to_rule(fact, rule, facts):
