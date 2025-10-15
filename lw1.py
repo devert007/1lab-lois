@@ -265,13 +265,12 @@ def calculate_implication(rule, facts_list):
             col_name, x_value = col_elem
             
         
-            if x_value <= y_value:
+            if x_value < 1:
                 value = 1.0
             else:
-                value = y_value/x_value if x_value != 0 else float('inf')
+                value = y_value if x_value ==1 else float('inf')
             
-            if value>1.0:
-                value=1.0
+
                 
             row.append(value)
                  
@@ -312,7 +311,7 @@ def print_implication(implication):
             print(f"{value:8.2f}", end="")
         print()
 
-def apply_goguen_t_norm(fact, implication):
+def apply_drastic_t_norm(fact, implication):
     result = []
  
     if not implication.matrix or len(fact.fuzzy_set) != len(implication.col_labels):
@@ -328,7 +327,7 @@ def apply_goguen_t_norm(fact, implication):
             col_label = implication.col_labels[col_index] 
             fact_value = fact_dict.get(col_label[0])
             implication_value = implication.matrix[row_index][col_index]
-            t_norm_value = fact_value * implication_value
+            t_norm_value = 0 if max(fact_value,implication_value)<1 else min(fact_value,implication_value)
             
             row_values.append(t_norm_value)
         max_value = max(row_values) if row_values else 0.0
@@ -374,7 +373,7 @@ if __name__ == "__main__":
         for fact in facts:
             for j, rule in enumerate(rules):
                 if can_apply_fact_to_rule(fact, rule, facts):
-                    res = apply_goguen_t_norm(fact, implications[j])
+                    res = apply_drastic_t_norm(fact, implications[j])
                     flag, index = fuzzy_set_equal_exact(res, facts)
                     new_facts_calc += 1
                     if flag:
