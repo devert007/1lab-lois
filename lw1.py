@@ -1,7 +1,7 @@
 "////////////////////////////////////////////////////////"
 "// Лабораторная работа 1 по дисциплине ЛОИС //"
 "// Выполнена студентами группы 321702 БГУИР Кислицын И.А., Олихвер В., Пучинская П.В.//"
-"// Реализация прямого нечеткого логического вывода с использованием треугольной нормы произведения и нечеткой импликации Гогена//"
+"// Реализация прямого нечеткого логического вывода с использованием драстической нормы произведения и нечеткой импликации Вебера//"
 "// 15.10.2025 //"
 "// Использованные источники: Голенков, В. В. Логические основы интеллектуальных систем. Практикум: учеб.-метод. пособие / В. В. Голенков. — БГУИР, 2011//"
 
@@ -48,11 +48,10 @@ def read_facts_and_rules(filename):
         print(f"Ошибка: файл '{filename}' не найден!")
         sys.exit(1)
     
-    # Разделяем на две части по пустой строке
     parts = content.split('\n\n', 1)  # Разделяем по первой пустой строке
     
     if len(parts) == 1:
-        # Если нет пустой строки, все считаем фактами
+        # если отсутсвует пустая строка,то все считаем фактами
         fact_lines = [line.strip() for line in parts[0].split('\n') if line.strip()]
         rule_lines = []
         print("Ошибка: Правила не найдены или записаны не через пустую строку")
@@ -109,7 +108,7 @@ def parse_fact(line):
     content = line[start:end].strip()
     fuzzy_set = []
     
-    # Проверка на пустой факт
+    # проверка на пустой факт
     if not content.strip():
         print(f"Ошибка: Факт '{name_part}' не содержит элементов")
         sys.exit(1)
@@ -124,12 +123,12 @@ def parse_fact(line):
             
             element = content[i+1:end_pos].strip()
             
-            # Проверка на пустой кортеж
+            # проверка на пустой кортеж
             if not element:
                 print(f"Ошибка: Пустой кортеж в факте '{name_part}'")
                 sys.exit(1)
             
-            # Разделяем на части по запятой
+            # разделяем на части по запятой
             comma_pos = element.find(',')
             if comma_pos == -1:
                 print(f"Ошибка: Кортеж должен содержать запятую в факте '{name_part}': '{element}'")
@@ -138,12 +137,12 @@ def parse_fact(line):
             elem_name = element[:comma_pos].strip()
             value_str = element[comma_pos+1:].strip()
             
-            # Проверка имени элемента
+            # проверка имени элемента
             if not is_valid_name(elem_name):
                 print(f"Ошибка: Некорректное имя элемента '{elem_name}' в факте '{name_part}'. Допустимы только латинские буквы и цифры, начинаться должно с буквы.")
                 sys.exit(1)
             
-            # Проверка значения принадлежности
+            # проверка значения принадлежности
             if not is_valid_fuzzy_value(value_str):
                 print(f"Ошибка: Некорректное значение принадлежности '{value_str}' в факте '{name_part}'. Должно быть действительным числом от 0 до 1.")
                 sys.exit(1)
@@ -157,7 +156,7 @@ def parse_fact(line):
             
             i = end_pos + 1
         else:
-            # Проверка на посторонние символы (кроме пробелов, табуляций и запятых)
+            # проверка на посторонние символы (кроме пробелов, табуляций и запятых)
             if content[i] not in [' ', '\t', ',']:
                 print(f"Ошибка: Посторонний символ '{content[i]}' в определении факта '{name_part}'")
                 sys.exit(1)
@@ -191,7 +190,7 @@ def parse_rule(line, facts_list):
         print(f"Ошибка: Некорректное имя факта '{name2}' в правиле. Допустимы только латинские буквы и цифры, начинаться должно с буквы.")
         sys.exit(1)
     
-    # Проверка существования фактов, упомянутых в правиле
+    # проверка существования фактов, упомянутых в правиле
     fact1_exists = False
     fact2_exists = False
     for fact in facts_list:
@@ -231,7 +230,6 @@ class Implication:
         self.col_labels = col_labels  
 
 def calculate_implication(rule, facts_list):
-    #Вычисляет матрицу импликации для правила
     first_fact = None
     second_fact = None
     
@@ -351,9 +349,8 @@ def format_res(fuzzy_set):
 
 if __name__ == "__main__":
     try:
-        facts, rules = read_facts_and_rules(input("Enter file name: "))
+        facts, rules = read_facts_and_rules(input("Имя файла: "))
         
-        # Вычисляем все импликации
         implications = calculate_all_implications(rules, facts)
       
         for implication in implications:
@@ -368,10 +365,10 @@ if __name__ == "__main__":
                     flag, index = fuzzy_set_equal_exact(res, facts)
                     new_facts_calc += 1
                     if flag:
-                        print("{",fact.name,",",implications[j].rule_name,"}"," |~ ","I",new_facts_calc, "=",format_res(res), "=", index)
+                        print("{",fact.name,",",implications[j].rule_name,"}"," |~ ","_",new_facts_calc, "=",format_res(res), "=", index)
                     else:
-                        facts.append(Fact("I"+str(new_facts_calc), res))
-                        print("{",fact.name,",",implications[j].rule_name,"}"," |~ ","I",new_facts_calc, "=",format_res(res))
+                        facts.append(Fact("_"+str(new_facts_calc), res))
+                        print("{",fact.name,",",implications[j].rule_name,"}"," |~ ","_",new_facts_calc, "=",format_res(res))
                         
     except SystemExit:
         pass
